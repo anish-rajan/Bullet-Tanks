@@ -47,7 +47,6 @@ for i in range(8):
     s.append([1800-125,40 + i*125])
     m.append(False)
 p=1
-men=True
 xm=770
 ym=430
 rectl=270
@@ -76,6 +75,18 @@ while 1:
         screen.blit(Quit,(830,550))
         pygame.display.update()
 
+    k=0
+    x=0
+    y=0
+    l=0
+    t=[1,1,1,1,1,1,1,1]
+    s=[]
+    m=[]
+    for i in range(8):
+        s.append([1800-125,40 + i*125])
+        m.append(False)
+    p=1
+    lives=3
 
 
     while 1:
@@ -127,8 +138,8 @@ while 1:
             shieldrect[0]=x
             shieldrect[1]=y+20
 
-        ballrect=ballrect.move([vx,vy])
-        u=(ballrect[1]+62)/125
+        #ballrect=ballrect.move([vx,vy])
+        u=(y+62)/125
         #print pygame.time.get_ticks()-time
        # time=pygame.time.get_ticks()
         if (pygame.time.get_ticks()-time)>=100:
@@ -136,8 +147,7 @@ while 1:
             m[u]=True
 
         for i in range(8):
-            if m[i]:
-                #s[u]=s[u].move([-1,0])
+            if m[i] and t[i]:
                 s[i][0]-=5
 
         for i in range(0,1000,125):
@@ -157,7 +167,7 @@ while 1:
                         s[i][0]=1800-125
                         k=0
             for i in range(8):
-                if m[i]:
+                if m[i] and t[i]:
                     screen.blit(bulletimg,(s[i][0],s[i][1]))
                     if s[i][0]<10:
                         m[i]=False
