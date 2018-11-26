@@ -7,27 +7,26 @@ myfont=pygame.font.SysFont('Comic Sans MS',200)
 myfonto=pygame.font.SysFont('Comic Sans MS',100)
 myfontl=pygame.font.SysFont('Comic Sans MS',30)
 size = width, height = 1800, 1000
-black = 0, 0, 0
-speed=[0,0]
+black = (0, 0, 0)
+s=-1
 screen = pygame.display.set_mode(size)
 Menu=myfont.render("MENU",False,(255,0,0))
 Start=myfonto.render("START",False,(255,0,0))
 Quit=myfonto.render("QUIT",False,(255,0,0))
 menubg=pygame.image.load("menu.png")
 menubg=pygame.transform.scale(menubg,(1800,1000))
-ball = pygame.image.load("captain.png")
+ball= pygame.image.load("captain.png")
 road=pygame.image.load("road.png")
 road=pygame.transform.scale(road,(1800,125))
 roadrect=road.get_rect()
 ball= pygame.transform.scale(ball,(125,125))
-caprunl=pygame.image.load("caprunl.png")
-caprunr=pygame.image.load("caprunr.png")
-caprunl=pygame.transform.scale(caprunl,(125,125))
-caprunr=pygame.transform.scale(caprunr,(125,125))
 cap=ball
 ballrect=cap.get_rect()
-
-
+capr=[pygame.image.load("capr1.png"),pygame.image.load("capr2.png"),pygame.image.load("capr3.png"),pygame.image.load("capr4.png"),pygame.image.load("capr5.png"),pygame.image.load("capr6.png")]
+capl=[pygame.image.load("capl1.png"),pygame.image.load("capl2.png"),pygame.image.load("capl3.png"),pygame.image.load("capl4.png"),pygame.image.load("capl5.png"),pygame.image.load("capl6.png")]
+for i in range(6):
+    capr[i]=pygame.transform.scale(capr[i],(125,125))
+    capl[i]=pygame.transform.scale(capl[i],(125,125))
 shield=pygame.image.load("shield.png")
 shield=pygame.transform.scale(shield,(90,90))
 shieldrect=shield.get_rect()
@@ -40,7 +39,7 @@ l=0
 t=[1,1,1,1,1,1,1,1]
 s=[]
 m=[]
-time=pygame.time.get_ticks()
+time=pygame.time.Clock()
 bulletimg=pygame.image.load("bullet.png")
 bulletimg=pygame.transform.scale(bulletimg,(50,50))
 for i in range(8):
@@ -52,6 +51,10 @@ ym=430
 rectl=270
 rectb=120
 lives=3
+count=10
+level=1
+levelc=1
+speed=1
 
 pygame.display.set_caption("Bullet Tanks")
 while 1:
@@ -87,14 +90,21 @@ while 1:
         m.append(False)
     p=1
     lives=3
-
+    levelc=1
+    count=10
+    level=1
+    speed=1
 
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
+
+        levels=myfont.render("Level:"+str(level),False,(255,0,0))
+
         vx=0
         vy=0
         keys=pygame.key.get_pressed()
+
         if event.type==pygame.KEYDOWN:
             if event.key == pygame.K_UP and y>0:
                 y-=10
@@ -110,45 +120,68 @@ while 1:
                 x-=5
                 vx=-5
                 if l==0:
-                    cap=caprunr
-                    l=1
-                if cap==caprunl:
-                    cap=caprunr
-                elif cap==caprunr:
-                    cap=caprunl
+                    cap=capl[0]
+                    if count==10:
+                        l+=1
+                        count=0
+                    else:
+                        count+=1
+                elif l>0 and l<5:
+                    cap=capl[l]
+                    if count==10:
+                        l+=1
+                        count=0
+                    else:
+                        count+=1
+                if count==10:
+                    if l==5:
+                        l=0
+                    else:
+                        l+=1
+                else:
+                    count+=1
             if event.key == pygame.K_RIGHT and (x+250)<width:
                 x+=5
                 vx=5
                 if l==0:
-                    cap=caprunl
-                    l=1
-                if cap==caprunl:
-                    cap=caprunr
-                elif cap==caprunr:
-                    cap=caprunl
-        if k==0:
+                    cap=capr[0]
+                    if count==10:
+                        l+=1
+                        count=0
+                    else:
+                        count+=1
+                elif l>0 and l<5:
+                    cap=capr[l]
+                    if count==10:
+                        l+=1
+                        count=0
+                    else:
+                        count+=1
+                if count==10:
+                    if l==5:
+                        l=0
+                    else:
+                        l+=1
+                else:
+                    count+=1
+
+        if k==0 and shieldrect[0]==x:
             if keys[pygame.K_SPACE]:
                 k=1
         if k==1:
-            shieldrect=shieldrect.move([4,0])
+            shieldrect=shieldrect.move([10,0])
             if shieldrect[0]>1800-125:
                 k=0
                 t[shieldrect[1]/125]=0
         else:
             shieldrect[0]=x
             shieldrect[1]=y+20
-
-        #ballrect=ballrect.move([vx,vy])
         u=(y+62)/125
-        #print pygame.time.get_ticks()-time
-       # time=pygame.time.get_ticks()
-        if (pygame.time.get_ticks()-time)>=100:
-            time=pygame.time.get_ticks()
-            m[u]=True
+        m[u]=True
 
         for i in range(8):
             if m[i] and t[i]:
-                s[i][0]-=5
+                s[i][0]-=speed
 
         for i in range(0,1000,125):
             screen.blit(road,(0,i))
@@ -182,6 +215,33 @@ while 1:
         else:
             break
         Lives=myfontl.render("Lives:"+str(lives),False,(255,255,255))
+
+
         screen.blit(Lives,(0,0))
-        pygame.display.update()
+        if levelc>=0:
+            screen.blit(levels,(700,450))
+            pygame.time.delay(1000)
+            levelc-=1
+
+        if level==5 and 1 not in t:
+            break
+        elif 1 not in t:
+            level+=1
+            screen.blit(levels,(700,450))
+            k=0
+            x=0
+            y=0
+            l=0
+            t=[1,1,1,1,1,1,1,1]
+            s=[]
+            m=[]
+            for i in range(8):
+                s.append([1800-125,40 + i*125])
+                m.append(False)
+            p=1
+            lives=3
+            speed+=1
+            count=10
+            levelc=1
         pygame.time.delay(5)
+        pygame.display.update()
