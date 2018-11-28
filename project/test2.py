@@ -3,6 +3,7 @@ if __name__=="__main__":
     pygame.init()
     pygame.font.init()
     pygame.mixer.init()
+#class for characters
 class Character:
     def __init__(self,left,right,stand,weapon):
         self.left=left
@@ -32,17 +33,17 @@ Quit=myfonto.render("QUIT",False,(0,255,0))
 menubg=pygame.image.load("menu.png")
 menubg=pygame.transform.scale(menubg,(1800,1000))
 #Captain stationary is caps
-caps= pygame.image.load("cap/captain.png")
+
 #Road
 road=pygame.image.load("road.png")
 road=pygame.transform.scale(road,(1800,125))
 roadrect=road.get_rect()
-caps= pygame.transform.scale(caps,(125,125))
+
 #Music Loading
 music=pygame.mixer.music.load("music.mp3")
 pygame.mixer.music.play(-1)
 
-#Cap is the state of the characters
+#Loading left and right arrays of images
 capr=[pygame.image.load("cap/capr1.png"),pygame.image.load("cap/capr2.png"),pygame.image.load("cap/capr3.png"),pygame.image.load("cap/capr4.png"),pygame.image.load("cap/capr5.png"),pygame.image.load("cap/capr6.png")]
 capl=[pygame.image.load("cap/capl1.png"),pygame.image.load("cap/capl2.png"),pygame.image.load("cap/capl3.png"),pygame.image.load("cap/capl4.png"),pygame.image.load("cap/capl5.png"),pygame.image.load("cap/capl6.png")]
 hawkl=[pygame.image.load("hawkeye/hawkl1.png"),pygame.image.load("hawkeye/hawkl2.png"),pygame.image.load("hawkeye/hawkl3.png"),pygame.image.load("hawkeye/hawkl4.png"),pygame.image.load("hawkeye/hawkl5.png"),pygame.image.load("hawkeye/hawkl6.png")]
@@ -57,35 +58,34 @@ for i in range(6):
 #Tank display
 tank=pygame.image.load("tank.png")
 tank=pygame.transform.scale(tank,(125,125))
-#Characters declaration
+#Characters creation
 spiderman=Character(spiderl,spiderr,pygame.image.load("spiderman/spider.png"),pygame.image.load("spiderman/web.png"))
 ironman=Character(ironl,ironr,pygame.image.load("ironman/iron.png"),pygame.image.load("ironman/laser.png"))
 hawkeye=Character(hawkl,hawkr,pygame.image.load("hawkeye/hawk.png"),pygame.image.load("hawkeye/arrow.png"))
 cap=Character(capl,capr,pygame.image.load("cap/captain.png"),pygame.image.load("cap/shield.png"))
-chars=[spiderman,ironman,hawkeye,cap]
-k=0
-x=0
-y=0
-l=0
+chars=[spiderman,ironman,hawkeye,cap]#list of characters
+k=0#whether shield has to be fired or not
+x=0#x coordinate of character
+y=0#y coordinate of character
+l=0#counter for sprite array
 #LIFE OF TANKS IS t
 t=[1,1,1,1,1,1,1,1]
-s=[]
-m=[]
-bulletimg=pygame.image.load("bullet.png")
+s=[]#coordinate of bullets
+m=[]#whether bullets have to be fired or not
+bulletimg=pygame.image.load("bullet.png")#bullet img
 bulletimg=pygame.transform.scale(bulletimg,(50,50))
 for i in range(8):
     s.append([1800-125,40 + i*125])
     m.append(False)
-p=1
-xm=770
-ym=430
-rectl=270
-rectb=120
-lives=3
-count=10
-level=1
-levelc=1
-speed=10
+xm=770#x coordinate of selection rectangle in menu
+ym=430#y coordinate of selection rect
+rectl=270#rectange length
+rectb=120#rectange breadth
+lives=3#lives
+count=10#no of times a sprite is displayed
+level=1#Levels
+levelc=1#If level has to be displayed or not
+speed=10# speed at which bullets come
 
 pygame.display.set_caption("Bullet Tanks")
 #Start Of the game loop
@@ -110,20 +110,18 @@ while 1:
         screen.blit(Start,(800,450))
         screen.blit(Quit,(830,550))
         pygame.display.update()
-    #Character Choosing
+    #image loading for buttons
     rightb=pygame.image.load("right.jpg")
     leftb=pygame.image.load("left.png")
     leftb=pygame.transform.scale(leftb,(50,50))
     rightb=pygame.transform.scale(rightb,(50,50))
     submit=pygame.image.load("submit.png")
     submit=pygame.transform.scale(submit,(200,50))
-
+#Character Choosing
     r=0
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
-
-
         pygame.mouse.get_pressed()
         if event.type==pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pos()[0] > 1250 and pygame.mouse.get_pos()[0] < 1300 and pygame.mouse.get_pos()[1] > 500 and pygame.mouse.get_pos()[1] < 550 and r<3:
@@ -140,6 +138,7 @@ while 1:
         screen.blit(submit,(750,800))
         screen.blit(chars[r].stand,(650,300))
         pygame.display.update()
+    #Reinitialising all variables
     k=0
     x=0
     y=0
@@ -240,7 +239,8 @@ while 1:
             char.weaponrect=char.weaponrect.move([10,0])
             if char.weaponrect[0]>1800-125:
                 k=0
-                t[char.weaponrect[1]/125]=0
+                #print char.weaponrect[1]+45/125
+                t[(char.weaponrect[1]+45)/125]=0
         else:
             char.weaponrect[0]=x
             char.weaponrect[1]=y+20
