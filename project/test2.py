@@ -52,9 +52,6 @@ ironr=[pygame.image.load("ironman/ironr1.png"),pygame.image.load("ironman/ironr2
 ironl=[pygame.image.load("ironman/ironl1.png"),pygame.image.load("ironman/ironl2.png"),pygame.image.load("ironman/ironl3.png"),pygame.image.load("ironman/ironl4.png"),pygame.image.load("ironman/ironl5.png"),pygame.image.load("ironman/ironl6.png")]
 spiderl=[pygame.image.load("spiderman/spiderl1.png"),pygame.image.load("spiderman/spiderl2.png"),pygame.image.load("spiderman/spiderl3.png"),pygame.image.load("spiderman/spiderl4.png"),pygame.image.load("spiderman/spiderl5.png"),pygame.image.load("spiderman/spiderl6.png")]
 spiderr=[pygame.image.load("spiderman/spiderr1.png"),pygame.image.load("spiderman/spiderr2.png"),pygame.image.load("spiderman/spiderr3.png"),pygame.image.load("spiderman/spiderr4.png"),pygame.image.load("spiderman/spiderr5.png"),pygame.image.load("spiderman/spiderr6.png")]
-for i in range(6):
-    capr[i]=pygame.transform.scale(capr[i],(125,125))
-    capl[i]=pygame.transform.scale(capl[i],(125,125))
 #Tank display
 tank=pygame.image.load("tank.png")
 tank=pygame.transform.scale(tank,(125,125))
@@ -86,6 +83,7 @@ count=10#no of times a sprite is displayed
 level=1#Levels
 levelc=1#If level has to be displayed or not
 speed=10# speed at which bullets come
+score=0#Score for hitting the tanks
 
 pygame.display.set_caption("Bullet Tanks")
 #Start Of the game loop
@@ -110,7 +108,8 @@ while 1:
         screen.blit(Start,(800,450))
         screen.blit(Quit,(830,550))
         pygame.display.update()
-    #image loading for buttons
+
+    #image loading for buttons for choosing characters
     rightb=pygame.image.load("right.jpg")
     leftb=pygame.image.load("left.png")
     leftb=pygame.transform.scale(leftb,(50,50))
@@ -158,6 +157,7 @@ while 1:
     char=chars[r]
     char.stand=pygame.transform.scale(char.stand,(125,125))
     char.state=char.stand
+    score=0#Score for hitting the tanks
 #main game
     while 1:
         for event in pygame.event.get():
@@ -165,24 +165,20 @@ while 1:
 
         levels=myfont.render("Level:"+str(level),False,(255,0,0))
 
-        vx=0
-        vy=0
+
         keys=pygame.key.get_pressed()
 #Controls of the game
         if event.type==pygame.KEYDOWN:
             if event.key == pygame.K_UP and y>0:
                 y-=10
-                vy=-10
                 char.state=char.stand
                 l=0
             if event.key == pygame.K_DOWN and (y+125)<height:
                 y+=10
-                vy=10
                 char.state=char.stand
                 l=0
             if event.key == pygame.K_LEFT and x>0:
                 x-=5
-                vx=-5
                 if l==0:
                     char.state=char.left[0]
                     if count==10:
@@ -206,7 +202,6 @@ while 1:
                     count+=1
             if event.key == pygame.K_RIGHT and (x+250)<width:
                 x+=5
-                vx=5
                 if l==0:
                     char.state=char.right[0]
                     if count==10:
@@ -239,14 +234,15 @@ while 1:
             char.weaponrect=char.weaponrect.move([10,0])
             if char.weaponrect[0]>1800-125:
                 k=0
-                #print char.weaponrect[1]+45/125
                 t[(char.weaponrect[1]+45)/125]=0
+                score+=1
+
         else:
             char.weaponrect[0]=x
             char.weaponrect[1]=y+20
         u=(y+62)/125
         m[u]=True
-
+#shield movement end
         for i in range(8):
             if m[i] and t[i]:
                 s[i][0]-=speed
@@ -285,10 +281,13 @@ while 1:
             screen.blit(char.state,(x,y))
         else:
             break
-        Lives=myfontl.render("Lives:"+str(lives),False,(255,255,255))
 
+        #Creating lives font
+        Lives=myfontl.render("Lives:"+str(lives),False,(0,0,0))
+        Score=myfontl.render("Score:"+str(score),False,(0,0,0))
 #Levels display
         screen.blit(Lives,(0,0))
+        screen.blit(Score,(0,35))
         if levelc>=0:
             screen.blit(levels,(700,450))
             pygame.time.delay(1000)
